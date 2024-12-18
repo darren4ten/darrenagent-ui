@@ -3,7 +3,7 @@
 # 默认版本
 VERSION="0.1"
 BASE_URL="https://darrenagent-worker.darren-teng-gg.workers.dev"
-SYNC_INTERVAL=15  # 默认同步时间为15秒
+SYNC_INTERVAL=10  # 默认同步时间为10秒
 
 # 定义Web API的URL和安全密钥
 API_URL="$BASE_URL/agent/update"
@@ -49,8 +49,8 @@ if [ "$OS" = "Linux" ]; then
 elif [ "$OS" = "FreeBSD" ]; then
   if service -e | grep -q darrenagent; then
     echo "darrenagent服务已安装，正在卸载旧版本..."
-    sudo service darrenagent stop
-    sudo rm /usr/local/etc/rc.d/darrenagent
+    service darrenagent stop
+    rm ~/bin/darrenagent.sh
   fi
 else
   echo "不支持的操作系统：$OS"
@@ -126,7 +126,7 @@ EOL
 
 elif [ "$OS" = "FreeBSD" ]; then
   # 创建FreeBSD rc脚本
-  cat <<EOL > /usr/local/etc/rc.d/darrenagent
+  cat <<EOL > ~/bin/darrenagent.rc
 #!/bin/sh
 
 # PROVIDE: darrenagent
@@ -162,11 +162,11 @@ run_rc_command "\$1"
 EOL
 
   # 赋予脚本执行权限
-  chmod +x /usr/local/etc/rc.d/darrenagent
+  chmod +x ~/bin/darrenagent.rc
 
   # 启用并启动服务
-  echo 'darrenagent_enable="YES"' | sudo tee -a /etc/rc.conf
-  sudo service darrenagent start
+  echo 'darrenagent_enable="YES"' >> ~/.config/rc.conf
+  ~/bin/darrenagent.rc start
 fi
 
 echo "darrenagent $VERSION 安装完成并已启动。"
